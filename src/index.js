@@ -47,13 +47,13 @@ export default class Gantt {
             header_height: 50,
             column_width: 30,
             step: 24,
-            view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
+            view_modes: ['Um quarto', 'Meio dia', 'Dia', 'Semana', 'Mês'],
             bar_height: 20,
             bar_corner_radius: 3,
             arrow_curve: 5,
             padding: 18,
-            view_mode: 'Day',
-            date_format: 'YYYY-MM-DD',
+            view_mode: 'Dia',
+            date_format: 'DD-MM-YYYY',
             custom_popup_html: null
         };
         this.options = Object.assign({}, default_options, options);
@@ -143,19 +143,19 @@ export default class Gantt {
     update_view_scale(view_mode) {
         this.options.view_mode = view_mode;
 
-        if (view_mode === 'Day') {
+        if (view_mode === 'Dia') {
             this.options.step = 24;
             this.options.column_width = 38;
-        } else if (view_mode === 'Half Day') {
+        } else if (view_mode === 'Meio dia') {
             this.options.step = 24 / 2;
             this.options.column_width = 38;
-        } else if (view_mode === 'Quarter Day') {
+        } else if (view_mode === 'Um quarto') {
             this.options.step = 24 / 4;
             this.options.column_width = 38;
-        } else if (view_mode === 'Week') {
+        } else if (view_mode === 'Semana') {
             this.options.step = 24 * 7;
             this.options.column_width = 140;
-        } else if (view_mode === 'Month') {
+        } else if (view_mode === 'Mês') {
             this.options.step = 24 * 30;
             this.options.column_width = 120;
         }
@@ -180,10 +180,10 @@ export default class Gantt {
         }
 
         // add date padding on both sides
-        if (this.view_is(['Quarter Day', 'Half Day'])) {
+        if (this.view_is(['Um quarto', 'Meio dia'])) {
             this.gantt_start = date_utils.add(this.gantt_start, -7, 'day');
             this.gantt_end = date_utils.add(this.gantt_end, 7, 'day');
-        } else if (this.view_is('Month')) {
+        } else if (this.view_is('Mês')) {
             this.gantt_start = date_utils.start_of(this.gantt_start, 'year');
             this.gantt_end = date_utils.add(this.gantt_end, 1, 'year');
         } else {
@@ -200,7 +200,7 @@ export default class Gantt {
             if (!cur_date) {
                 cur_date = date_utils.clone(this.gantt_start);
             } else {
-                cur_date = this.view_is('Month')
+                cur_date = this.view_is('Mês')
                     ? date_utils.add(cur_date, 1, 'month')
                     : date_utils.add(cur_date, this.options.step, 'hour');
             }
@@ -323,7 +323,7 @@ export default class Gantt {
         for (let date of this.dates) {
             let tick_class = 'tick';
             // thick tick for monday
-            if (this.view_is('Day') && date.getDate() === 1) {
+            if (this.view_is('Dia') && date.getDate() === 1) {
                 tick_class += ' thick';
             }
             // thick tick for first week
@@ -335,7 +335,7 @@ export default class Gantt {
                 tick_class += ' thick';
             }
             // thick ticks for quarters
-            if (this.view_is('Month') && (date.getMonth() + 1) % 3 === 0) {
+            if (this.view_is('Mês') && (date.getMonth() + 1) % 3 === 0) {
                 tick_class += ' thick';
             }
 
@@ -345,7 +345,7 @@ export default class Gantt {
                 append_to: this.layers.grid
             });
 
-            if (this.view_is('Month')) {
+            if (this.view_is('Mês')) {
                 tick_x +=
                     date_utils.get_days_in_month(date) *
                     this.options.column_width /
@@ -358,7 +358,7 @@ export default class Gantt {
 
     make_grid_highlights() {
         // highlight today's date
-        if (this.view_is('Day')) {
+        if (this.view_is('Dia')) {
             const x =
                 date_utils.diff(date_utils.today(), this.gantt_start, 'hour') /
                 this.options.step *
@@ -427,8 +427,8 @@ export default class Gantt {
             last_date = date_utils.add(date, 1, 'year');
         }
         const date_text = {
-            'Quarter Day_lower': date_utils.format(date, 'HH'),
-            'Half Day_lower': date_utils.format(date, 'HH'),
+            'Um quarto_menor': date_utils.format(date, 'HH'),
+            'Meio dia_menor': date_utils.format(date, 'HH'),
             Day_lower:
                 date.getDate() !== last_date.getDate()
                     ? date_utils.format(date, 'D')
@@ -438,25 +438,25 @@ export default class Gantt {
                     ? date_utils.format(date, 'D MMM')
                     : date_utils.format(date, 'D'),
             Month_lower: date_utils.format(date, 'MMMM'),
-            'Quarter Day_upper':
+            'Um quarto_maior':
                 date.getDate() !== last_date.getDate()
                     ? date_utils.format(date, 'D MMM')
                     : '',
-            'Half Day_upper':
+            'Meio dia_maior':
                 date.getDate() !== last_date.getDate()
                     ? date.getMonth() !== last_date.getMonth()
                       ? date_utils.format(date, 'D MMM')
                       : date_utils.format(date, 'D')
                     : '',
-            Day_upper:
+            Dia_maior:
                 date.getMonth() !== last_date.getMonth()
                     ? date_utils.format(date, 'MMMM')
                     : '',
-            Week_upper:
+            Semana_maior:
                 date.getMonth() !== last_date.getMonth()
                     ? date_utils.format(date, 'MMMM')
                     : '',
-            Month_upper:
+            'Mês_maior':
                 date.getFullYear() !== last_date.getFullYear()
                     ? date_utils.format(date, 'YYYY')
                     : ''
@@ -469,25 +469,25 @@ export default class Gantt {
         };
 
         const x_pos = {
-            'Quarter Day_lower': this.options.column_width * 4 / 2,
-            'Quarter Day_upper': 0,
-            'Half Day_lower': this.options.column_width * 2 / 2,
-            'Half Day_upper': 0,
-            Day_lower: this.options.column_width / 2,
-            Day_upper: this.options.column_width * 30 / 2,
-            Week_lower: 0,
-            Week_upper: this.options.column_width * 4 / 2,
-            Month_lower: this.options.column_width / 2,
-            Month_upper: this.options.column_width * 12 / 2
+            'Um quarto_menor': this.options.column_width * 4 / 2,
+            'Um quarto_maior': 0,
+            'Meio dia_menor': this.options.column_width * 2 / 2,
+            'Meio dia_maior': 0,
+            Dia_menor: this.options.column_width / 2,
+            Dia_maior: this.options.column_width * 30 / 2,
+            Semana_menor: 0,
+            Semana_maior: this.options.column_width * 4 / 2,
+            'Mês_menor': this.options.column_width / 2,
+            'Mês_maior': this.options.column_width * 12 / 2
         };
 
         return {
-            upper_text: date_text[`${this.options.view_mode}_upper`],
-            lower_text: date_text[`${this.options.view_mode}_lower`],
-            upper_x: base_pos.x + x_pos[`${this.options.view_mode}_upper`],
-            upper_y: base_pos.upper_y,
-            lower_x: base_pos.x + x_pos[`${this.options.view_mode}_lower`],
-            lower_y: base_pos.lower_y
+            maior_text: date_text[`${this.options.view_mode}_maior`],
+            menor_text: date_text[`${this.options.view_mode}_menor`],
+            maior_x: base_pos.x + x_pos[`${this.options.view_mode}_maior`],
+            maior_y: base_pos.maior_y,
+            menor_x: base_pos.x + x_pos[`${this.options.view_mode}_menor`],
+            menor_y: base_pos.menor_y
         };
     }
 
